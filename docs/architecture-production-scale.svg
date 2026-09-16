@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" role="img" aria-labelledby="title desc">
+  <title id="title">Production-scale vacation-rental marketplace architecture</title>
+  <desc id="desc">Clients route through global edge delivery to independently scalable services, persistent data stores, search, event processing, and platform operations.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0 0L0 6L9 3z" fill="#526377"/></marker></defs>
+  <style>.box{stroke:#aab5c4;stroke-width:2;rx:18}.line{stroke:#526377;stroke-width:3;fill:none;marker-end:url(#arrow)}.h{font:700 29px Arial;fill:#142033}.s{font:700 18px Arial;fill:#142033}.b{font:15px Arial;fill:#142033}</style>
+  <rect width="1600" height="960" fill="#f7f9fc"/>
+  <text x="800" y="54" text-anchor="middle" class="h">Production-scale vacation-rental marketplace</text>
+  <text x="800" y="82" text-anchor="middle" class="b">Global delivery, domain-oriented services, durable data, and asynchronous workflows</text>
+  <g>
+    <rect x="60" y="145" width="210" height="120" fill="#ffe6eb" class="box"/><text x="165" y="190" text-anchor="middle" class="s">Clients</text><text x="165" y="220" text-anchor="middle" class="b">Web · iOS · Android</text><text x="165" y="244" text-anchor="middle" class="b">Host portal</text>
+    <rect x="365" y="145" width="250" height="120" fill="#e4f1ff" class="box"/><text x="490" y="190" text-anchor="middle" class="s">Edge delivery</text><text x="490" y="220" text-anchor="middle" class="b">CDN · WAF · rate limits</text><text x="490" y="244" text-anchor="middle" class="b">SSR / static frontend</text>
+    <rect x="710" y="125" width="260" height="160" fill="#e8f7ed" class="box"/><text x="840" y="170" text-anchor="middle" class="s">API gateway / BFF</text><text x="840" y="200" text-anchor="middle" class="b">OAuth · session · API composition</text><text x="840" y="226" text-anchor="middle" class="b">Experimentation · regional routing</text><text x="840" y="252" text-anchor="middle" class="b">Versioned public APIs</text>
+  </g>
+  <path d="M270 205H365M615 205H710" class="line"/>
+  <g fill="#fff">
+    <rect x="105" y="400" width="210" height="116" class="box"/><rect x="380" y="400" width="210" height="116" class="box"/><rect x="655" y="400" width="210" height="116" class="box"/><rect x="930" y="400" width="210" height="116" class="box"/><rect x="1205" y="400" width="210" height="116" class="box"/>
+  </g>
+  <g>
+    <text x="210" y="440" text-anchor="middle" class="s">Listing service</text><text x="210" y="469" text-anchor="middle" class="b">Property · availability</text><text x="210" y="492" text-anchor="middle" class="b">Pricing read model</text>
+    <text x="485" y="440" text-anchor="middle" class="s">Booking service</text><text x="485" y="469" text-anchor="middle" class="b">Reservation holds</text><text x="485" y="492" text-anchor="middle" class="b">Idempotent checkout</text>
+    <text x="760" y="440" text-anchor="middle" class="s">Identity service</text><text x="760" y="469" text-anchor="middle" class="b">Guests · hosts</text><text x="760" y="492" text-anchor="middle" class="b">Trust &amp; risk</text>
+    <text x="1035" y="440" text-anchor="middle" class="s">Search service</text><text x="1035" y="469" text-anchor="middle" class="b">Geo · filters</text><text x="1035" y="492" text-anchor="middle" class="b">Ranked results</text>
+    <text x="1310" y="440" text-anchor="middle" class="s">Media &amp; messaging</text><text x="1310" y="469" text-anchor="middle" class="b">Image pipeline</text><text x="1310" y="492" text-anchor="middle" class="b">Notifications</text>
+  </g>
+  <path d="M840 285V350H210V400M840 285V350H485V400M840 285V400M840 285V350H1035V400M840 285V350H1310V400" class="line"/>
+  <g fill="#f8edff">
+    <rect x="130" y="640" width="260" height="118" class="box"/><rect x="455" y="640" width="260" height="118" class="box"/><rect x="780" y="640" width="260" height="118" class="box"/><rect x="1105" y="640" width="260" height="118" class="box"/>
+  </g>
+  <g>
+    <text x="260" y="682" text-anchor="middle" class="s">Data stores</text><text x="260" y="712" text-anchor="middle" class="b">Postgres shards · Redis</text><text x="260" y="736" text-anchor="middle" class="b">Read replicas</text>
+    <text x="585" y="682" text-anchor="middle" class="s">Object storage</text><text x="585" y="712" text-anchor="middle" class="b">Originals · CDN variants</text><text x="585" y="736" text-anchor="middle" class="b">Lifecycle policies</text>
+    <text x="910" y="682" text-anchor="middle" class="s">Search index</text><text x="910" y="712" text-anchor="middle" class="b">OpenSearch geo index</text><text x="910" y="736" text-anchor="middle" class="b">Streaming updates</text>
+    <text x="1235" y="682" text-anchor="middle" class="s">Event platform</text><text x="1235" y="712" text-anchor="middle" class="b">Kafka · workers</text><text x="1235" y="736" text-anchor="middle" class="b">Payments · analytics</text>
+  </g>
+  <path d="M210 516V640M485 516V595H260V640M760 516V595H260V640M1035 516V640M1310 516V640M210 595H910V640" class="line"/>
+  <rect x="315" y="838" width="970" height="74" fill="#e4f1ff" class="box"/><text x="800" y="870" text-anchor="middle" class="s">Platform &amp; operations</text><text x="800" y="896" text-anchor="middle" class="b">Kubernetes across regions · CI/CD canary releases · tracing, metrics and logs · backups and disaster recovery</text>
+  <path d="M260 758V838M585 758V838M910 758V838M1235 758V838" class="line"/>
+</svg>
