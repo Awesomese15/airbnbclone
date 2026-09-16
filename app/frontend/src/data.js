@@ -147,7 +147,7 @@ export const listing = {
   rating: '4.95',
   reviews: 19,
   price: '₹28,499',
-  description: 'Plan your relaxing holiday in the heart of Candolim. This cozy one-bedroom stay has a private jacuzzi, high-speed WiFi, Smart TV, pet-friendly comfort, and easy access to beaches, cafés, restaurants, and nightlife.',
+  description: '🌴 Plan Your Relaxing Holiday at Amor De Goa by Mirashya Homes! ✨ Stay in this cozy 1BHK in the heart of Candolim, featuring a private jacuzzi 🛁 for the perfect unwind. Enjoy high-speed WiFi 💻, Smart TV 📺, pet-friendly comfort 🐾, and stylish interiors. Just minutes from Candolim Beach 🏖️, popular cafés, restaurants, and nightlife 🍹, it’s ideal for couples seeking romance, relaxation, and a touch of luxury in North Goa. ❤️🌴',
   guests: '3 guests',
   bedrooms: '1 bedroom',
   beds: '1 bed',
@@ -194,6 +194,20 @@ export const listing = {
     lng: 73.7622,
     label: 'Candolim',
   },
+  calendarBlockedDates: [
+    '2026-11-18',
+    '2026-11-19',
+    '2026-11-20',
+    '2026-11-21',
+    '2026-11-22',
+    '2026-11-23',
+    '2026-11-24',
+    '2026-11-29',
+    '2026-11-30',
+  ],
 };
 
 export const galleryPhotos = listing.rooms.flatMap((room) => room.photos);
+
+/** Descriptions longer than this show collapsed with a fade and “Show more”. */
+export const DESCRIPTION_COLLAPSE_THRESHOLD = 300;

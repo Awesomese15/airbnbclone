@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { galleryPhotos, listing } from './data';
+import { DESCRIPTION_COLLAPSE_THRESHOLD, galleryPhotos, listing } from './data';
+import DateRangeCalendar, { nightsBetween } from './DateRangeCalendar';
+import { formatShortBookingDate } from './dateUtils';
 import airbnbLogo from './assets/airbnb-logo.png';
+
+const DEFAULT_CHECK_IN = new Date(2026, 9, 18);
+const DEFAULT_CHECK_OUT = new Date(2026, 9, 23);
+const DEFAULT_VIEW_MONTH = new Date(2026, 9, 1);
+
+function scrollToSection(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 const icons = {
   search: 'M11 19a8 8 0 1 1 5.657-13.657A8 8 0 0 1 11 19Zm0-2a6 6 0 1 0 0-12 6 6 0 0 0 0 12Zm5.293-.707 4 4-1.414 1.414-4-4 1.414-1.414Z',
@@ -104,7 +114,7 @@ function Header() {
 
 function Hero({ openTour }) {
   return (
-    <section className="hero" aria-label="Property photos">
+    <section id="photos" className="hero" aria-label="Property photos">
       {listing.heroPhotos.map((photo, index) => (
         <button
           key={photo.id}
@@ -122,14 +132,37 @@ function Hero({ openTour }) {
   );
 }
 
-function ListingSections({ saved, setSaved }) {
+function ListingSubnav() {
+  return (
+    <nav className="listing-subnav" aria-label="Listing sections">
+      <button type="button" className="subnav-link" onClick={() => scrollToSection('photos')}>Photos</button>
+      <button type="button" className="subnav-link is-active" onClick={() => scrollToSection('amenities')}>Amenities</button>
+      <button type="button" className="subnav-link" onClick={() => scrollToSection('reviews')}>Reviews</button>
+      <button type="button" className="subnav-link" onClick={() => scrollToSection('location')}>Location</button>
+    </nav>
+  );
+}
+
+function ListingSections({
+  saved,
+  setSaved,
+  checkIn,
+  checkOut,
+  onChangeRange,
+  viewMonth,
+  onViewMonthChange,
+}) {
   const amenities = [
-    ['wifi', 'Wifi'],
-    ['bed', 'Bedroom'],
-    ['pool', 'Shared outdoor pool'],
-    ['key', 'Self check-in'],
-    ['car', 'Free parking on premises'],
-    ['snowflake', 'Air conditioning'],
+    ['wifi', 'Wifi', false],
+    ['bed', 'Bedroom', false],
+    ['pool', 'Shared outdoor pool', false],
+    ['key', 'Self check-in', false],
+    ['car', 'Free parking on premises', false],
+    ['snowflake', 'Air conditioning', false],
+    ['heart', 'Pets allowed', false],
+    ['share', 'Exterior security cameras on property', false],
+    ['close', 'Carbon monoxide alarm', true],
+    ['close', 'Smoke alarm', true],
   ];
 
   return (
@@ -146,17 +179,33 @@ function ListingSections({ saved, setSaved }) {
         </div>
       </section>
 
-      <section className="content-section amenities-section">
+      <section id="amenities" className="content-section amenities-section">
         <div className="section-heading-row">
           <div><h2>What this place offers</h2><p>Everyday essentials for a comfortable stay.</p></div>
           <button className="outline-button">Show all 50 amenities</button>
         </div>
         <div className="amenities-grid">
-          {amenities.map(([icon, label]) => <div key={label} className="amenity-item"><Icon name={icon} size={24} stroke /><span>{label}</span></div>)}
+          {amenities.map(([icon, label, unavailable]) => (
+            <div key={label} className={`amenity-item${unavailable ? ' is-unavailable' : ''}`}>
+              <Icon name={icon} size={24} stroke />
+              <span>{label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="content-section reviews-section">
+      <DateRangeCalendar
+        id="availability"
+        locationLabel={listing.map.label}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        onChangeRange={onChangeRange}
+        viewMonth={viewMonth}
+        onViewMonthChange={onViewMonthChange}
+        blockedDates={listing.calendarBlockedDates}
+      />
+
+      <section id="reviews" className="content-section reviews-section">
         <div className="review-heading">
           <span className="review-badge">✦</span>
           <h2>{listing.rating} · {listing.reviews} reviews</h2>
@@ -172,7 +221,7 @@ function ListingSections({ saved, setSaved }) {
         </div>
       </section>
 
-      <section className="content-section location-section">
+      <section id="location" className="content-section location-section">
         <h2>Where you'll be</h2>
         <p>Candolim, Goa, India</p>
         <div className="map-frame">
@@ -213,7 +262,40 @@ function ListingSections({ saved, setSaved }) {
   );
 }
 
-function Details({ saved, setSaved }) {
+function ListingDescription({ text }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > DESCRIPTION_COLLAPSE_THRESHOLD;
+
+  if (!isLong) {
+    return <p className="description">{text}</p>;
+  }
+
+  return (
+    <div className={`description-block${expanded ? ' is-expanded' : ''}`}>
+      <div className="description-text-wrap">
+        <p className="description">{text}</p>
+      </div>
+      <button
+        type="button"
+        className="underlined description-toggle"
+        aria-expanded={expanded}
+        onClick={() => setExpanded((open) => !open)}
+      >
+        {expanded ? 'Show less' : 'Show more'} <span aria-hidden="true">{expanded ? '‹' : '›'}</span>
+      </button>
+    </div>
+  );
+}
+
+function Details({ saved, setSaved, checkIn, checkOut, onOpenCalendar }) {
+  const nights = nightsBetween(checkIn, checkOut);
+  const nightlyAmount = 28499;
+  const stayTotal = nights > 0 ? nightlyAmount * nights : 0;
+  const cleaningFee = 2500;
+  const grandTotal = stayTotal + (nights > 0 ? cleaningFee : 0);
+
+  const formatRupee = (value) => `₹${value.toLocaleString('en-IN')}`;
+
   return (
     <div className="details">
       <section className="summary">
@@ -236,19 +318,33 @@ function Details({ saved, setSaved }) {
           </div>
         ))}
         <hr />
-        <p className="description">{listing.description}</p>
-        <button className="underlined">Show more <span>›</span></button>
+        <ListingDescription text={listing.description} />
       </section>
       <aside className="booking-card" aria-label="Reservation details">
         <div className="price"><b>{listing.price}</b> night <span>★ {listing.rating} · {listing.reviews} reviews</span></div>
         <div className="date-box">
-          <button><small>CHECK-IN</small><b>Add date</b></button>
-          <button><small>CHECKOUT</small><b>Add date</b></button>
-          <button className="guests"><small>GUESTS</small><b>1 guest</b><Icon name="chevronDown" size={18} stroke /></button>
+          <button type="button" onClick={onOpenCalendar} aria-label="Choose check-in date">
+            <small>CHECK-IN</small>
+            <b>{checkIn ? formatShortBookingDate(checkIn) : 'Add date'}</b>
+          </button>
+          <button type="button" onClick={onOpenCalendar} aria-label="Choose checkout date">
+            <small>CHECKOUT</small>
+            <b>{checkOut ? formatShortBookingDate(checkOut) : 'Add date'}</b>
+          </button>
+          <button type="button" className="guests"><small>GUESTS</small><b>1 guest</b><Icon name="chevronDown" size={18} stroke /></button>
         </div>
-        <button className="reserve">Check availability</button>
+        <button className="reserve">{nights > 0 ? 'Reserve' : 'Check availability'}</button>
         <p>You won't be charged yet</p>
-        <div className="charge"><span>{listing.price} × 5 nights</span><span>₹124,000</span><span>Cleaning fee</span><span>₹2,500</span><b>Total before taxes</b><b>₹126,500</b></div>
+        {nights > 0 && (
+          <div className="charge">
+            <span>{listing.price} × {nights} night{nights === 1 ? '' : 's'}</span>
+            <span>{formatRupee(stayTotal)}</span>
+            <span>Cleaning fee</span>
+            <span>{formatRupee(cleaningFee)}</span>
+            <b>Total before taxes</b>
+            <b>{formatRupee(grandTotal)}</b>
+          </div>
+        )}
         <button className="save-inline" aria-pressed={saved} onClick={() => setSaved(!saved)}><Icon name="heart" size={16} stroke /> {saved ? 'Saved' : 'Save listing'}</button>
       </aside>
     </div>
@@ -369,10 +465,18 @@ export default function App() {
   const [tour, setTour] = useState(null);
   const [lightbox, setLightbox] = useState(null);
   const [saved, setSaved] = useState(false);
+  const [checkIn, setCheckIn] = useState(DEFAULT_CHECK_IN);
+  const [checkOut, setCheckOut] = useState(DEFAULT_CHECK_OUT);
+  const [viewMonth, setViewMonth] = useState(DEFAULT_VIEW_MONTH);
 
   const openTour = (photoId) => setTour(photoId);
   const closeTour = () => setTour(null);
   const openLightbox = (index) => setLightbox(index);
+  const onChangeRange = (start, end) => {
+    setCheckIn(start);
+    setCheckOut(end);
+  };
+  const openCalendar = () => scrollToSection('availability');
 
   return <>
     <Header />
@@ -385,8 +489,22 @@ export default function App() {
         </div>
       </div>
       <Hero openTour={openTour} />
-      <Details saved={saved} setSaved={setSaved} />
-      <ListingSections saved={saved} setSaved={setSaved} />
+      <Details
+        saved={saved}
+        setSaved={setSaved}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        onOpenCalendar={openCalendar}
+      />
+      <ListingSections
+        saved={saved}
+        setSaved={setSaved}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        onChangeRange={onChangeRange}
+        viewMonth={viewMonth}
+        onViewMonthChange={setViewMonth}
+      />
     </main>
     {tour !== null && <PhotoTour initialPhotoId={tour} close={closeTour} openLightbox={openLightbox} />}
     {lightbox !== null && <Lightbox initialIndex={lightbox} close={() => setLightbox(null)} />}
